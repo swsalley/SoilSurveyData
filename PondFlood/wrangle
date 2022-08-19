@@ -124,10 +124,10 @@ rm(comonth.pond)
 
 # save outputs as csv
 setwd("E:/DATA/2022gNATSGO_CONUS/Co_flood_pond")
-write.csv(comonth.flodfreqcl, "flodfreqcl.csv")
-write.csv(comonth.floddurcl, "floddurcl.csv")
-write.csv(comonth.pondfreqcl, "pondfreqcl.csv")
-write.csv(comonth.ponddurcl, "ponddurcl.csv")
-write.csv(comonth.ponddep_l, "ponddep_l.csv")
-write.csv(comonth.ponddep_r, "ponddep_r.csv")
-write.csv(comonth.ponddep_h, "ponddep_h.csv")
+write.csv(comonth.flodfreqcl, "flodfreqcl.csv") # n = 983,572
+write.csv(comonth.floddurcl, "floddurcl.csv")   # n = 123,249 
+write.csv(comonth.pondfreqcl, "pondfreqcl.csv") # n = 883,215
+write.csv(comonth.ponddurcl, "ponddurcl.csv")   # n =  84,149
+write.csv(comonth.ponddep_l, "ponddep_l.csv")   # n =  85,974
+write.csv(comonth.ponddep_r, "ponddep_r.csv")   # n =  85,907
+write.csv(comonth.ponddep_h, "ponddep_h.csv")   # n =  85,733
