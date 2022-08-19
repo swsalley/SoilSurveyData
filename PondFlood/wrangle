@@ -1,0 +1,133 @@
+# Extract ponding and flooding frequency data from gNATSGO
+# Shawn W. Salley, Shawn.Salley@usda.gov, Aug 19, 2022
+# valley feaver interpretation
+
+library(sf)
+library(dplyr)
+library(tidyr)
+
+# download and unpack the gNATSGO file, completed with the 2022 snapshot
+# 
+
+
+
+# use the sf package to read the component_month and component tables
+setwd("E:/DATA/2022gNATSGO_CONUS/")
+
+comonth <- sf::st_read(dsn = "gNATSGO_CONUS.gdb", layer = "comonth") # n = 11,800,878
+comonth <- comonth[with(comonth, order(cokey, monthseq)),] # sort order of months
+component <- sf::st_read(dsn = "gNATSGO_CONUS.gdb", layer = "component") # n = 1,136,011
+component <- component %>% select(mukey, cokey, comppct_r)
+component <- unique(component) # n = 1,136,011
+
+
+
+# sort and pivot flood/pond  class/duration
+
+
+## Flood frequency class ##
+comonth.flod <- comonth %>% select(cokey, month, flodfreqcl) # n = 11,800,878
+comonth.flod <- unique(comonth.flod) # n = 11,799,587
+comonth.flodfreqcl <- comonth.flod %>% pivot_wider(names_from = month, values_from = flodfreqcl)
+# data is not clean, remove duplicates, take first in sequence
+comonth.flod$check <- paste(comonth.flod$cokey, comonth.flod$month) # check if unique values
+comonth.flod <- comonth.flod[!duplicated(comonth.flod$check ),] 
+comonth.flodfreqcl <- comonth.flod[1:3] %>% pivot_wider(names_from = month, values_from = flodfreqcl)
+# 
+comonth.flodfreqcl <- inner_join(component, comonth.flod, by = "cokey")
+rm(comonth.flod)
+
+
+
+## Flood frequency duration ##
+comonth.flod <- comonth %>% select(cokey, month, floddurcl) 
+comonth.flod <- unique(comonth.flod) # n = 11799492
+comonth.flod <- comonth.flod %>% drop_na(floddurcl) # n = 936375
+comonth.floddurcl <- comonth.flod %>% pivot_wider(names_from = month, values_from = floddurcl) # n = 983572
+#no duplication using drop na
+comonth.floddurcl <- inner_join(component, comonth.floddurcl, by = "cokey") # n = 123,249
+rm(comonth.flod)
+
+
+
+## Pond frequency class ##
+comonth.pond <- comonth %>% select(cokey, month, pondfreqcl)
+comonth.pond <- unique(comonth.pond) # n = 11,799,587
+comonth.pond <- comonth.pond %>% drop_na(pondfreqcl) # n = 10282733
+comonth.pondfreqcl <- comonth.pond %>% pivot_wider(names_from = month, values_from = pondfreqcl) # n = 883,215
+# data is not clean, remove duplicates, take first in sequence
+comonth.pond$check <- paste(comonth.pond$cokey, comonth.pond$month) # check if unique values
+comonth.pond <- comonth.pond[!duplicated(comonth.pond$check ),] # n = 10,282,715
+comonth.pondfreqcl <- comonth.pond[1:3] %>% pivot_wider(names_from = month, values_from = pondfreqcl) # n = 883,215
+#
+comonth.pondfreqcl <- inner_join(component, comonth.pondfreqcl, by = "cokey") # n = 883,215
+rm(comonth.pond)
+
+
+
+## Pond  duration class ##
+comonth.pond <- comonth %>% select(cokey, month, ponddurcl)
+comonth.pond <- unique(comonth.pond) 
+comonth.pond <- comonth.pond %>% drop_na(ponddurcl) # n = 604,796
+comonth.ponddurcl <- comonth.pond %>% pivot_wider(names_from = month, values_from = ponddurcl)
+# data is not clean, remove duplicates, take first in sequence
+comonth.pond$check <- paste(comonth.pond$cokey, comonth.pond$month) # check if unique values
+comonth.pond <- comonth.pond[!duplicated(comonth.pond$check),] # n = 604,790
+comonth.ponddurcl <- comonth.pond[1:3] %>% pivot_wider(names_from = month, values_from = ponddurcl) # n = 84,149
+#
+comonth.ponddurcl <- inner_join(component, comonth.ponddurcl, by = "cokey") # n = 84,149
+rm(comonth.pond)
+
+
+
+## Ponding depth low value ##
+comonth.pond <- comonth %>% select(cokey, month, ponddep_l)
+comonth.pond <- unique(comonth.pond)
+comonth.pond <- comonth.pond %>% drop_na(ponddep_l) # n = 612,709
+comonth.ponddep_l <- comonth.pond %>% pivot_wider(names_from = month, values_from = ponddep_l)
+# no duplication using drop na
+comonth.ponddep_l  <- inner_join(component, comonth.ponddep_l, by = "cokey") # n = 85,974
+rm(comonth.pond)
+
+
+
+## Ponding depth representative value ##
+comonth.pond <- comonth %>% select(cokey, month, ponddep_r)
+comonth.pond <- unique(comonth.pond)
+comonth.pond <- comonth.pond %>% drop_na(ponddep_r) # n = 614,479
+comonth.ponddep_r <- comonth.pond %>% pivot_wider(names_from = month, values_from = ponddep_r)
+# data is not clean, remove duplicates, take first in sequence
+comonth.pond$check <- paste(comonth.pond$cokey, comonth.pond$month) # check if unique values
+comonth.pond <- comonth.pond[!duplicated(comonth.pond$check ),] # n = 614427
+comonth.ponddep_r <- comonth.pond[1:3] %>% pivot_wider(names_from = month, values_from = ponddep_r) # n = 85,907
+#
+comonth.ponddep_r  <- inner_join(component, comonth.ponddep_r, by = "cokey") # n = 85,907
+rm(comonth.pond)
+
+
+
+## Ponding depth high value ##
+comonth.pond <- comonth %>% select(cokey, month, ponddep_h)
+comonth.pond <- unique(comonth.pond)
+comonth.pond <- comonth.pond %>% drop_na(ponddep_h) # n = 611,532
+comonth.ponddep_h <- comonth.pond %>% pivot_wider(names_from = month, values_from = ponddep_h)
+# data is not clean, remove duplicates, take first in sequence
+comonth.pond$check <- paste(comonth.pond$cokey, comonth.pond$month) # check if unique values
+comonth.pond <- comonth.pond[!duplicated(comonth.pond$check ),] # n = 611,522
+comonth.ponddep_h <- comonth.pond[1:3] %>% pivot_wider(names_from = month, values_from = ponddep_h) # n = 85,733
+#
+comonth.ponddep_h  <- inner_join(component, comonth.ponddep_h, by = "cokey") # n = 85,907
+rm(comonth.pond)
+
+
+
+
+# save outputs as csv
+setwd("E:/DATA/2022gNATSGO_CONUS/Co_flood_pond")
+write.csv(comonth.flodfreqcl, "flodfreqcl.csv")
+write.csv(comonth.floddurcl, "floddurcl.csv")
+write.csv(comonth.pondfreqcl, "pondfreqcl.csv")
+write.csv(comonth.ponddurcl, "ponddurcl.csv")
+write.csv(comonth.ponddep_l, "ponddep_l.csv")
+write.csv(comonth.ponddep_r, "ponddep_r.csv")
+write.csv(comonth.ponddep_h, "ponddep_h.csv")
