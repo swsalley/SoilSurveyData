@@ -1,8 +1,7 @@
-# A testing data set for consistence (adhesion, cohesion), hand texture estimates, and texture (%) 
-# inputs are from a 2021 nasis snapshot, tables: phorizon, phlabresults
-# Shawn.Salley@usda.gov, 20231206
+# create a testing data set for consistence (adhesion, cohesion) on hand texturing
+# nasis data from 2001 snapshot, tables: phorizon, phlabresults
 
-# this file creates file "NASIS_consistence_data.csv"
+# Shawn.Salley@usda.gov, 20231206
 
 # packages
 library(dplyr)
@@ -93,6 +92,11 @@ gc()
 phorizon.all <- left_join(phorizon.all, unique(phorizon[,c(2,70)]))
 phorizon.all$sum <- phorizon.all$sandtotest + phorizon.all$silttotest + phorizon.all$claytotest
 phorizon.all <- phorizon.all %>% filter(sum < 107 & sum > 93)
+
+phorizon.all <- phorizon.all %>% select(peiidref, phiid:textureclfieldlab, table, sandtotest:claytotest)
+colnames(phorizon.all)[15:17] <- c("sand", "silt", "clay")
+phorizon.all <- phorizon.all %>% arrange(peiidref, hzdept)
+                                   
 head(phorizon.all)
 
 # save
