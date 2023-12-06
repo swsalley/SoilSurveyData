@@ -91,12 +91,11 @@ gc()
 
 # add peiid from phorizon
 phorizon.all <- left_join(phorizon.all, unique(phorizon[,c(2,70)]))
+phorizon.all$sum <- phorizon.all$sandtotest + phorizon.all$silttotest + phorizon.all$claytotest
+phorizon.all <- phorizon.all %>% filter(sum < 107 & sum > 93)
 head(phorizon.all)
 
-phorizon.all$sum <- phorizon.all$sandtotest + phorizon.all$silttotest + phorizon.all$claytotest
-
-phorizon.all <- phorizon.all %>% filter(sum < 107 & sum > 93)
-#
+# save
 write.csv(phorizon.all, "D:/FY2024/project/texture/NASIS_consistence_data.csv")
 
 # end #
