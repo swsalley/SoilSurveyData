@@ -1,5 +1,5 @@
 # create a testing data set for consistence (adhesion, cohesion) on hand texturing
-# nasis data from 2001 snapshot, tables: phorizon, phlabresults
+# nasis data from 2021 snapshot, tables: phorizon, phlabresults
 
 # Shawn.Salley@usda.gov, 20231206
 
